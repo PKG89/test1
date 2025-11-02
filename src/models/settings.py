@@ -97,10 +97,51 @@ class TINSettings:
 
 
 @dataclass
+class DXFGenerationSettings:
+    """Settings for DXF generation."""
+    enabled: bool = True
+    drawing_scale: str = "1:1000"  # One of: 1:500, 1:1000, 1:2000, 1:5000
+    use_template: bool = False
+    show_z_labels: bool = True
+    generate_3d_polylines: bool = True
+    polyline_break_distance: float = 70.0
+    round_coordinates: bool = True
+    coordinate_precision: int = 3
+    
+    def to_dict(self):
+        """Convert to dictionary."""
+        return {
+            'enabled': self.enabled,
+            'drawing_scale': self.drawing_scale,
+            'use_template': self.use_template,
+            'show_z_labels': self.show_z_labels,
+            'generate_3d_polylines': self.generate_3d_polylines,
+            'polyline_break_distance': self.polyline_break_distance,
+            'round_coordinates': self.round_coordinates,
+            'coordinate_precision': self.coordinate_precision
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'DXFGenerationSettings':
+        """Create from dictionary."""
+        return cls(
+            enabled=data.get('enabled', True),
+            drawing_scale=data.get('drawing_scale', '1:1000'),
+            use_template=data.get('use_template', False),
+            show_z_labels=data.get('show_z_labels', True),
+            generate_3d_polylines=data.get('generate_3d_polylines', True),
+            polyline_break_distance=data.get('polyline_break_distance', 70.0),
+            round_coordinates=data.get('round_coordinates', True),
+            coordinate_precision=data.get('coordinate_precision', 3)
+        )
+
+
+@dataclass
 class ProjectSettings:
     """Project-level settings."""
     scale: float = 1.0
     densification: DensificationSettings = field(default_factory=DensificationSettings)
     tin: TINSettings = field(default_factory=TINSettings)
+    dxf_generation: DXFGenerationSettings = field(default_factory=DXFGenerationSettings)
     template_path: Optional[str] = None
     output_format: str = 'dxf'
