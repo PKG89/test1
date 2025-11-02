@@ -26,6 +26,8 @@ setup(
         'Pillow>=10.0.0',
         'requests>=2.31.0',
         'python-telegram-bot>=20.0',
+        'pandas>=2.0.0',
+        'chardet>=5.0.0',
     ],
     extras_require={
         'dev': [
