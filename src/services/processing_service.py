@@ -6,6 +6,7 @@ from pathlib import Path
 from src.processors.point_cloud import PointCloudProcessor
 from src.processors.tin_builder import TINBuilder
 from src.services.densification_service import DensificationService
+from src.services.tin_service import TINService
 from src.dxf.exporter import DXFExporter
 from src.models.settings import ProjectSettings, DensificationSettings
 from src.models.point_data import PointCloud, TIN
@@ -53,6 +54,14 @@ class ProcessingService:
             results['original_triangles'] = original_tin.triangle_count
             results['tin_quality'] = original_tin.quality
             
+            real_tin = None
+            tin_stats = {}
+            
+            if settings.tin.enabled:
+                tin_service = TINService(settings.tin)
+                real_tin, tin_stats = tin_service.build_tin(cloud)
+                results['real_tin'] = tin_stats
+            
             densified_cloud = None
             densified_tin = None
             densification_stats = {}
@@ -77,13 +86,22 @@ class ProcessingService:
                  settings.densification.show_triangles_layer)
             )
             
+            show_real_tin = (
+                settings.tin.enabled and 
+                settings.tin.output_layers and
+                real_tin is not None and
+                not tin_stats.get('skipped', False)
+            )
+            
             exporter.export_full_project(
                 original_cloud=cloud,
                 original_tin=original_tin,
                 densified_cloud=densified_cloud,
                 densified_tin=densified_tin,
+                real_tin=real_tin,
                 show_original=True,
-                show_densified=show_densified
+                show_densified=show_densified,
+                show_real_tin=show_real_tin
             )
             
             output_path = Path(output_file)

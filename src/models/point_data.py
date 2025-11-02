@@ -13,6 +13,15 @@ class PointType(Enum):
     EDITED = "edited"
 
 
+class PointCode(Enum):
+    """Survey point codes for different feature types."""
+    BPL = "bpl"  # Breakline
+    CPL = "cpl"  # Centerline
+    BORD = "bord"  # Border
+    TERRAIN = "terrain"  # Terrain point
+    OTHER = "other"  # Other point type
+
+
 @dataclass
 class SurveyPoint:
     """A single survey point with coordinates and metadata."""
@@ -73,11 +82,34 @@ class PointCloud:
 
 
 @dataclass
+class Polyline:
+    """Polyline representing a structural feature like breakline or border."""
+    vertices: np.ndarray
+    code: str = "other"
+    is_closed: bool = False
+    
+    @property
+    def segment_count(self) -> int:
+        """Number of segments in the polyline."""
+        return len(self.vertices) - 1 if not self.is_closed else len(self.vertices)
+    
+    def get_segments(self) -> List[Tuple[int, int]]:
+        """Get all segments as pairs of vertex indices."""
+        segments = []
+        for i in range(len(self.vertices) - 1):
+            segments.append((i, i + 1))
+        if self.is_closed and len(self.vertices) > 2:
+            segments.append((len(self.vertices) - 1, 0))
+        return segments
+
+
+@dataclass
 class TIN:
     """Triangulated Irregular Network model."""
     points: np.ndarray
     triangles: np.ndarray
     quality: float = 0.0
+    breaklines: List[Polyline] = field(default_factory=list)
     
     @property
     def triangle_count(self) -> int:

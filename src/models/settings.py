@@ -1,7 +1,7 @@
 """Configuration and settings models."""
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 
 
@@ -10,6 +10,14 @@ class InterpolationMethod(Enum):
     LINEAR = "linear"
     CUBIC = "cubic"
     NEAREST = "nearest"
+
+
+class TINCodeSelection(Enum):
+    """Preset code selections for TIN construction."""
+    ALL = "all"
+    TERRAIN_ONLY = "terrain_only"
+    WITH_BREAKLINES = "with_breaklines"
+    CUSTOM = "custom"
 
 
 @dataclass
@@ -52,9 +60,47 @@ class DensificationSettings:
 
 
 @dataclass
+class TINSettings:
+    """Settings for TIN surface construction."""
+    enabled: bool = True
+    code_selection: TINCodeSelection = TINCodeSelection.ALL
+    custom_codes: List[str] = field(default_factory=list)
+    use_breaklines: bool = True
+    breakline_codes: List[str] = field(default_factory=lambda: ['bpl', 'cpl', 'bord'])
+    max_edge_length: Optional[float] = None
+    output_layers: bool = True
+    
+    def to_dict(self):
+        """Convert to dictionary."""
+        return {
+            'enabled': self.enabled,
+            'code_selection': self.code_selection.value,
+            'custom_codes': self.custom_codes,
+            'use_breaklines': self.use_breaklines,
+            'breakline_codes': self.breakline_codes,
+            'max_edge_length': self.max_edge_length,
+            'output_layers': self.output_layers
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'TINSettings':
+        """Create from dictionary."""
+        return cls(
+            enabled=data.get('enabled', True),
+            code_selection=TINCodeSelection(data.get('code_selection', 'all')),
+            custom_codes=data.get('custom_codes', []),
+            use_breaklines=data.get('use_breaklines', True),
+            breakline_codes=data.get('breakline_codes', ['bpl', 'cpl', 'bord']),
+            max_edge_length=data.get('max_edge_length'),
+            output_layers=data.get('output_layers', True)
+        )
+
+
+@dataclass
 class ProjectSettings:
     """Project-level settings."""
     scale: float = 1.0
     densification: DensificationSettings = field(default_factory=DensificationSettings)
+    tin: TINSettings = field(default_factory=TINSettings)
     template_path: Optional[str] = None
     output_format: str = 'dxf'

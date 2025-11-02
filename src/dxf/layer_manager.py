@@ -12,6 +12,8 @@ class LayerConfig:
     ADDED_POINTS = "2 пикеты добавленные"
     ORIGINAL_SURFACE = "1 исходная поверхность"
     ORIGINAL_POINTS = "1 пикеты исходные"
+    REAL_SURFACE = "1 реальная поверхность"
+    REAL_POINTS = "1 Отметки и точки реального рельефа"
     
     LAYER_CONFIGS = {
         EDITED_SURFACE: {
@@ -31,6 +33,16 @@ class LayerConfig:
         },
         ORIGINAL_POINTS: {
             'color': 7,
+            'linetype': 'CONTINUOUS',
+            'lineweight': 35
+        },
+        REAL_SURFACE: {
+            'color': 3,
+            'linetype': 'CONTINUOUS',
+            'lineweight': 25
+        },
+        REAL_POINTS: {
+            'color': 3,
             'linetype': 'CONTINUOUS',
             'lineweight': 35
         }
