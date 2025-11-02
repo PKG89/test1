@@ -1,0 +1,58 @@
+# Sample survey data with diverse codes
+# Format: X Y Z CODE [COMMENT]
+
+# Standard numbered points
+100.0 200.0 150.5 1 First measurement point
+105.0 205.0 151.2 2 Second point
+110.0 210.0 152.0 3 Control point
+115.0 215.0 151.8 5 Boundary marker
+
+# Reference points (VK-rule)
+120.0 220.0 153.0 vk 1 Primary reference
+125.0 225.0 152.5 rp 5 Ground reference point
+130.0 230.0 154.0 trig 100 Triangulation station
+
+# Kilometer markers (km-rule)
+135.0 235.0 153.5 km 10 Road kilometer 10
+140.0 240.0 154.2 km+ 15 Picket 10+150
+
+# Archaeological features
+145.0 245.0 155.0 shurf 1 Archaeological excavation pit
+150.0 250.0 155.5 skulpt Ancient statue remains
+155.0 255.0 156.0 eskizRAZR Destruction zone sketch
+160.0 260.0 156.5 raskop 3 Main excavation area
+
+# Communication lines (k-codes)
+165.0 265.0 157.0 k-kabel 25 Underground cable
+170.0 270.0 157.5 k-tep 30 Heating pipeline
+175.0 275.0 158.0 k-voda 12 Water supply
+180.0 280.0 158.5 k-kanal 8 Sewage line
+185.0 285.0 159.0 k-gaz 15 Gas pipeline
+
+# Infrastructure
+190.0 290.0 159.5 zd 5 Residential building
+195.0 295.0 160.0 stolb 42 Electric pole
+200.0 300.0 160.5 luk 18 Manhole cover
+205.0 305.0 161.0 most 1 Pedestrian bridge
+
+# Vegetation
+210.0 310.0 161.5 der 1 Oak tree diameter 80cm
+215.0 315.0 162.0 kust Dense bushes
+220.0 320.0 162.5 les Forest edge
+
+# Water features
+225.0 325.0 163.0 ur-vod 1 Summer water level
+230.0 330.0 163.5 kolod 3 Well depth 12m
+
+# Boundaries
+235.0 335.0 164.0 gr 25 Property boundary point
+240.0 340.0 164.5 znak 12 Boundary marker
+
+# Terrain features
+245.0 345.0 165.0 bpl Breakline start
+250.0 350.0 165.5 otkos Slope angle 30deg
+255.0 355.0 166.0 terrain Relief point
+
+# Unknown codes for testing
+260.0 360.0 166.5 UNKNOWN1 Testing unknown code handling
+265.0 365.0 167.0 test_code Another unknown code

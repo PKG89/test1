@@ -10,18 +10,26 @@ from src.models.point_data import PointCloud, SurveyPoint, PointType
 class PointCloudProcessor:
     """Processor for point cloud operations."""
     
-    def load_from_file(self, filepath: str) -> PointCloud:
+    def load_from_file(self, filepath: str, parse_codes: bool = False) -> PointCloud:
         """
         Load point cloud from file.
         
         Supports .txt and .xyz formats with X Y Z coordinates.
+        Extended format: X Y Z [CODE] [COMMENT]
+        
+        Args:
+            filepath: Path to coordinate file
+            parse_codes: If True, parse codes and comments from extended format
         """
-        points = self._parse_file(filepath)
-        metadata = [{'type': PointType.ORIGINAL.value} for _ in range(len(points))]
+        if parse_codes:
+            points, metadata = self._parse_file_with_codes(filepath)
+        else:
+            points = self._parse_file(filepath)
+            metadata = [{'type': PointType.ORIGINAL.value} for _ in range(len(points))]
         return PointCloud(points=points, point_metadata=metadata)
     
     def _parse_file(self, filepath: str) -> np.ndarray:
-        """Parse coordinate file."""
+        """Parse coordinate file (basic format)."""
         points = []
         with open(filepath, 'r', encoding='utf-8') as f:
             for line in f:
@@ -41,6 +49,47 @@ class PointCloudProcessor:
             raise ValueError("No valid points found in file")
         
         return np.array(points)
+    
+    def _parse_file_with_codes(self, filepath: str) -> tuple:
+        """
+        Parse coordinate file with codes and comments.
+        
+        Format: X Y Z [CODE] [COMMENT...]
+        
+        Returns:
+            Tuple of (points array, metadata list)
+        """
+        points = []
+        metadata = []
+        
+        with open(filepath, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                
+                parts = line.split()
+                if len(parts) >= 3:
+                    try:
+                        x, y, z = map(float, parts[:3])
+                        
+                        point_meta = {'type': PointType.ORIGINAL.value}
+                        
+                        if len(parts) >= 4:
+                            point_meta['code'] = parts[3]
+                        
+                        if len(parts) >= 5:
+                            point_meta['comment'] = ' '.join(parts[4:])
+                        
+                        points.append([x, y, z])
+                        metadata.append(point_meta)
+                    except ValueError:
+                        continue
+        
+        if not points:
+            raise ValueError("No valid points found in file")
+        
+        return np.array(points), metadata
     
     def remove_duplicates(self, cloud: PointCloud, tolerance: float = 0.001) -> PointCloud:
         """Remove duplicate points within tolerance."""
