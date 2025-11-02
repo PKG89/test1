@@ -62,7 +62,8 @@ docker run -d --env-file .env dxf-bot
 
 - Импорт точечных данных в форматах TXT и XYZ
 - Построение триангуляционных сетей (TIN) с использованием алгоритма Делоне
-- Денсификация облаков точек для повышения точности
+- **Интеллектуальная денсификация рельефа** с автоматическим определением разреженных областей
+- Три метода интерполяции: Linear, Cubic, Nearest
 - Фильтрация и очистка данных
 
 ### Работа с DXF-шаблонами
@@ -90,16 +91,39 @@ docker run -d --env-file .env dxf-bot
 
 ## 📊 Примеры использования
 
-### Обработка облака точек
+### Обработка облака точек с денсификацией
 
 ```python
-from processors import PointCloudProcessor
+from src.services.processing_service import ProcessingService
+from src.models.settings import ProjectSettings, DensificationSettings, InterpolationMethod
 
-processor = PointCloudProcessor()
-processor.load_data('coordinates.txt')
-processor.build_tin()
-processor.densify(factor=2.0)
-processor.export_to_dxf('output.dxf', template='template.dxf')
+# Настройка денсификации
+settings = ProjectSettings(
+    densification=DensificationSettings(
+        enabled=True,
+        grid_spacing=5.0,
+        interpolation_method=InterpolationMethod.LINEAR,
+        show_generated_layer=True,
+        show_triangles_layer=True
+    )
+)
+
+# Обработка
+service = ProcessingService()
+results = service.process_project('input.txt', 'output.dxf', settings)
+
+if results['success']:
+    print(f"Добавлено точек: {results['densification']['generated_points']}")
+```
+
+### Использование через командную строку
+
+```bash
+# С денсификацией
+python cli.py input.txt output.dxf --densify --grid-spacing 5.0
+
+# Показать статистику файла
+python cli.py input.txt output.dxf --stats
 ```
 
 ### Создание DXF-шаблона
