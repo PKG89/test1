@@ -40,8 +40,10 @@ class DXFExporter:
                           original_tin: TIN,
                           densified_cloud: Optional[PointCloud] = None,
                           densified_tin: Optional[TIN] = None,
+                          real_tin: Optional[TIN] = None,
                           show_original: bool = True,
-                          show_densified: bool = True):
+                          show_densified: bool = True,
+                          show_real_tin: bool = False):
         """
         Export complete project with original and densified data.
         
@@ -50,8 +52,10 @@ class DXFExporter:
             original_tin: TIN from original points
             densified_cloud: Densified point cloud (optional)
             densified_tin: TIN from densified points (optional)
+            real_tin: TIN built with selected codes and breaklines (optional)
             show_original: Whether to include original data
             show_densified: Whether to include densified data
+            show_real_tin: Whether to include real TIN surface
         """
         if show_original:
             self._export_points(
@@ -83,6 +87,19 @@ class DXFExporter:
                     LayerConfig.EDITED_SURFACE,
                     color=1
                 )
+        
+        if show_real_tin and real_tin is not None:
+            self._export_points(
+                real_tin.points,
+                LayerConfig.REAL_POINTS,
+                []
+            )
+            self._export_tin_triangles(
+                real_tin,
+                LayerConfig.REAL_SURFACE,
+                color=3
+            )
+            self._export_breaklines(real_tin)
     
     def _export_points(self, points: np.ndarray, layer: str, 
                       metadata: Optional[List[dict]] = None):
@@ -154,6 +171,27 @@ class DXFExporter:
                 attribs['color'] = color
             
             self.msp.add_lwpolyline(triangle_points, close=True, dxfattribs=attribs)
+    
+    def _export_breaklines(self, tin: TIN):
+        """Export breaklines as polylines."""
+        if not tin.breaklines:
+            return
+        
+        for polyline in tin.breaklines:
+            if len(polyline.vertices) < 2:
+                continue
+            
+            points_2d = [(v[0], v[1]) for v in polyline.vertices]
+            
+            self.msp.add_lwpolyline(
+                points_2d,
+                close=polyline.is_closed,
+                dxfattribs={
+                    'layer': LayerConfig.REAL_SURFACE,
+                    'color': 5,
+                    'lineweight': 50
+                }
+            )
     
     def save(self, filepath: str):
         """Save DXF file."""
