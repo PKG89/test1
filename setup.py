@@ -19,15 +19,16 @@ setup(
     package_dir={'': 'src'},
     python_requires='>=3.8',
     install_requires=[
+        'python-telegram-bot>=20.0,<21.0',
+        'python-dotenv>=1.0.0',
+        'pandas>=2.0.0',
         'numpy>=1.24.0',
         'scipy>=1.10.0',
         'shapely>=2.0.0',
         'ezdxf>=1.1.0',
+        'chardet>=5.0.0',
         'Pillow>=10.0.0',
         'requests>=2.31.0',
-        'python-telegram-bot>=20.0',
-        'pandas>=2.0.0',
-        'chardet>=5.0.0',
     ],
     extras_require={
         'dev': [
@@ -41,6 +42,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'cad-p=cad_p.bot:main',
             'dxf-geo=cli:main',
         ],
     },

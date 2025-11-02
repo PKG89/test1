@@ -1,39 +1,21 @@
-"""Main entry point for the Telegram bot."""
+"""
+Legacy entry point for the Telegram bot.
 
-import os
-import logging
-from telegram.ext import Application
-from src.bot.handlers import create_conversation_handler
+This file is kept for backward compatibility.
+Please use: python -m cad_p
+"""
 
-# Configure logging
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+import sys
+from pathlib import Path
 
+# Add src to path if needed
+src_path = Path(__file__).parent / "src"
+if src_path.exists() and str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
 
-def main():
-    """Start the bot."""
-    # Get token from environment
-    token = os.environ.get('TELEGRAM_BOT_TOKEN')
-    if not token:
-        raise ValueError(
-            "TELEGRAM_BOT_TOKEN environment variable not set.\n"
-            "Please set it with your bot token from @BotFather"
-        )
-    
-    # Create application
-    application = Application.builder().token(token).build()
-    
-    # Add conversation handler
-    conv_handler = create_conversation_handler()
-    application.add_handler(conv_handler)
-    
-    # Start bot
-    logger.info("Starting bot...")
-    application.run_polling(allowed_updates=['message', 'callback_query'])
-
+# Import and run the main bot
+from cad_p.bot import main
 
 if __name__ == '__main__':
+    print("Note: This is the legacy entrypoint. Please use: python -m cad_p")
     main()
