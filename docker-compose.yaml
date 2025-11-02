@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cad-p-bot:latest
+    container_name: cad-p-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount directories for persistent data
+      - ./temp:/app/temp
+      - ./output:/app/output
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./templates:/app/templates:ro
+    networks:
+      - cad-p-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  cad-p-network:
+    driver: bridge

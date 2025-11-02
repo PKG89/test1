@@ -39,20 +39,31 @@ pip install -r requirements.txt
 
 # Настройка переменных окружения
 cp .env.example .env
-# Добавьте свой TELEGRAM_BOT_TOKEN в .env
+# Добавьте свой BOT_TOKEN в .env
 
 # Запуск Telegram-бота
-python bot_main.py
+python -m cad_p
+
+# Или используйте Makefile
+make run
 
 # Или запустите CLI-версию для обработки файлов
 python cli.py input.txt output.dxf --densify
 ```
 
+Подробные инструкции по установке см. в [INSTALLATION.md](./INSTALLATION.md)
+
 ### Запуск через Docker
 
 ```bash
-docker build -t dxf-bot .
-docker run -d --env-file .env dxf-bot
+docker build -t cad-p-bot .
+docker run -d --env-file .env cad-p-bot
+
+# Или используйте docker-compose
+docker-compose up -d
+
+# Или используйте Makefile
+make docker-compose
 ```
 
 ## 📚 Документация
